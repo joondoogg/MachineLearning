@@ -1,4 +1,4 @@
-# MachineLearning Project
+![image](https://github.com/user-attachments/assets/16165126-2ccb-4be6-95c9-e7ee9a2deadd)# MachineLearning Project
 기계학습과응용 MAT3123 프로젝트입니다. 
 # 수정점 : 코드 전반적으로 수정, my_eye는 84line part 수정하기, 결과 첨부하기
 첫 번째 프로젝트 : 눈 주변 감지 모델 -> 시선 tracking 모델
@@ -241,7 +241,18 @@ latest feature을 가져와서, 한 번의 prediction을 거친다. 오늘의 �
     plt.show()
 ```
 2 year analysis result :
+
 <img width="497" alt="image" src="https://github.com/user-attachments/assets/b292c4ea-2754-404f-940e-72831d9617e3">
 ![image](https://github.com/user-attachments/assets/239bbed1-6ef0-4c39-b5fb-90c1a190bd13)
 ![image](https://github.com/user-attachments/assets/72ef1e47-e338-4959-b97a-9a0a32a35c58)
+<img width="494" alt="image" src="https://github.com/user-attachments/assets/1120e270-dbc0-45e8-876c-113dde6ed7ca">
+![image](https://github.com/user-attachments/assets/18490fb1-009a-4bf5-aa4b-bfaec02c9091)
+![image](https://github.com/user-attachments/assets/5282f0ed-1e91-43ad-8aa7-c2f09568d658)
+<img width="520" alt="image" src="https://github.com/user-attachments/assets/230d5288-35a7-49cb-8d57-ffb07dbd09e7">
+![image](https://github.com/user-attachments/assets/30eddf0c-0de2-4c83-9264-7810d473ad6b)
+![image](https://github.com/user-attachments/assets/d8e9615e-2975-47c6-9581-59ee70ab7c4e)
+<img width="496" alt="image" src="https://github.com/user-attachments/assets/af2d6a92-1bbe-4038-a44b-0126877653bf">
+![image](https://github.com/user-attachments/assets/efb1bb9d-0ddc-4776-b8fd-9f1c32416797)
+![image](https://github.com/user-attachments/assets/bab03775-a529-430b-8404-0b111eee62e8)
+
 
