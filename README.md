@@ -241,7 +241,7 @@ latest feature을 가져와서, 한 번의 prediction을 거친다. 오늘의 �
     plt.legend()
     plt.show()
 ```
-2 year analysis result :
+2 year analysis :
 
 <img width="497" alt="image" src="https://github.com/user-attachments/assets/b292c4ea-2754-404f-940e-72831d9617e3">
 
@@ -263,7 +263,7 @@ latest feature을 가져와서, 한 번의 prediction을 거친다. 오늘의 �
 ![image](https://github.com/user-attachments/assets/efb1bb9d-0ddc-4776-b8fd-9f1c32416797)
 ![image](https://github.com/user-attachments/assets/bab03775-a529-430b-8404-0b111eee62e8)
 
-1 year analysis result :
+1 year analysis :
 
 <img width="496" alt="image" src="https://github.com/user-attachments/assets/ff3d0a3f-9f92-4d3a-b2b1-46ee64cda497">
 
