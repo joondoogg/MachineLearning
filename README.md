@@ -1,4 +1,4 @@
-<img width="501" alt="image" src="https://github.com/user-attachments/assets/3806ba29-0c3e-4cf5-a35b-d987c3417202"># MachineLearning Project
+# MachineLearning Project
 기계학습과응용 MAT3123 프로젝트입니다. 
 # 수정점 : 코드 전반적으로 수정, my_eye는 84line part 수정하기, 결과 첨부하기
 # for 주식 플젝 : 더 공부해서 마코위츠 최적화로 결국 해볼 것이다 로 마무리 하기
