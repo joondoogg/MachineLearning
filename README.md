@@ -1,6 +1,7 @@
-# MachineLearning Project
+<img width="501" alt="image" src="https://github.com/user-attachments/assets/3806ba29-0c3e-4cf5-a35b-d987c3417202"># MachineLearning Project
 기계학습과응용 MAT3123 프로젝트입니다. 
 # 수정점 : 코드 전반적으로 수정, my_eye는 84line part 수정하기, 결과 첨부하기
+# for 주식 플젝 : 더 공부해서 마코위츠 최적화로 결국 해볼 것이다 로 마무리 하기
 첫 번째 프로젝트 : 눈 주변 감지 모델 -> 시선 tracking 모델
 Motivation : 불과 몇 년 전만 해도 핸드폰 잠금해제 기능은 패턴 입력, 숫자 입력 등으로 간단한 논리였습니다. 그러나 요즘 핸드폰에는, 얼굴 인식 기능이 탑재되어 얼굴을 인식해서 눈을 마주치고 핸드폰 주인의 얼굴일 경우 Unlock이 되는 잠금 해제 기법을 많이 쓰고 있습니다. 이는 특히 코로나19 이후로 발달이 많이 되었는데, 코로나 초기에는 마스크를 쓰고 있으면 얼굴 인식이 제대로 되지 않아 잠금 해제가 어려웠습니다. 그러나 기술이 발전하여 마스크를 쓰고 있어도 시선을 track하여 잠금 해제하는 방식이 쓰이게 되었습니다. 저는 코로나19 때 이러한 기술의 발전이 삶을 매우 편리하게 해준다는 것을 상기하여 시선을 track하는 모델을 만들어보고 싶어졌습니다. 그러나 시선을 track하는 모델을 바로 만들기 어려워서, 눈 주변을 먼저 감지하는 모델을 만들어보고, 시선을 track하는 모델을 구현했습니다.
 
@@ -261,5 +262,35 @@ latest feature을 가져와서, 한 번의 prediction을 거친다. 오늘의 �
 
 ![image](https://github.com/user-attachments/assets/efb1bb9d-0ddc-4776-b8fd-9f1c32416797)
 ![image](https://github.com/user-attachments/assets/bab03775-a529-430b-8404-0b111eee62e8)
-![image](https://github.com/user-attachments/assets/16165126-2ccb-4be6-95c9-e7ee9a2deadd)
+
+1 year analysis result :
+
+<img width="496" alt="image" src="https://github.com/user-attachments/assets/ff3d0a3f-9f92-4d3a-b2b1-46ee64cda497">
+
+![image](https://github.com/user-attachments/assets/604ceed2-e64b-444c-a20f-34dcae13a639)
+
+![image](https://github.com/user-attachments/assets/cb3f9a92-a35c-4fb9-894b-a9fcfb8e2c69)
+
+<img width="501" alt="image" src="https://github.com/user-attachments/assets/75607cce-7430-4583-96f4-827f349a1bd3">
+
+![image](https://github.com/user-attachments/assets/8e846b76-4f9e-44a6-bcde-b99b8527a54e)
+
+![image](https://github.com/user-attachments/assets/29c128e9-5397-40d3-84fb-472ac6b0755c)
+
+<img width="501" alt="image" src="https://github.com/user-attachments/assets/6831220c-52f5-48ba-85f9-26523adb68ed">
+
+![image](https://github.com/user-attachments/assets/6306576a-6719-48fe-a2b2-ef40e62e6649)
+
+![image](https://github.com/user-attachments/assets/2bb9817e-6b68-4270-8d3d-7242be94a791)
+
+<img width="507" alt="image" src="https://github.com/user-attachments/assets/c70fe182-150f-4dbd-a23f-e310c25ac59c">
+
+![image](https://github.com/user-attachments/assets/777ee5aa-cfcd-4727-a4b5-4157cfba5961)
+
+![image](https://github.com/user-attachments/assets/823b2dd2-ac1d-4599-9311-126832328588)
+
+
+
+
+
 
