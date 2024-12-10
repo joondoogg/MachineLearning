@@ -130,7 +130,118 @@ cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
         break
 ```
 
+두 번째 프로젝트 : 주가 지수 예측 모델
+Motivation : 퀀트 투자는 고급 수학 능력과 컴퓨터 알고리즘을 활용하여 주가 지수를 예측하고, 최선의 hedging전략을 펼치는 투자 전략입니다. 이는 투자 결정에서 인간의 감정, 직관 등을 배제하고 데이터를 기반으로 분석한다는 점에서 기존의 분석을 대체하였습니다. 머신러닝 알고리즘은 대규모 금융 데이터에서 패턴을 탐지하는데 강력한 도구가 될 수 있습니다. 저는 파이썬에서 어떤 라이브러리가 이러한 금융 데이터를 분석하는 머신 러닝을 구현할까? 라는 궁금증에서 출발해서 이 모델을 구현하게 되었습니다.
 
+_주가예측 모델_
+Yahoo finance를 사용하여, 총 네 개의 회사의 ticker를 googling하여 다음과 같이 딕셔너리를 만든다.
+```
+# 종목 딕셔너리
+tickers = {
+    'Samsung': '005930.KS',
+    'Kakao': '035720.KS',
+    'Naver': '035420.KS',
+    'SKHynix': '000660.KS'
+}
+```
+총 1년, 2년간의 1시간 마다의 주식 데이터를 불러온 값을 비교하여 각각을 시각화할 것입니다.
+```
+period = '2y'
+interval = '1h'
 
+models = {}  # model per ticker를 저장하기 위함
+test_indices = None  # for alignment
+```
+```yf.download``` 를 통해 원하는 기간동안의 데이터를 다운 받을 수 있다.
+```stock_datas = yf.download(ticker, interval=interval, period=period)```
+또한 주식시장, 파생상품시장에서 분석을 할 때 기본적 도구로서 쓰이는 이동평균을 계산할 것이다.
+분석의 비교를 용이하게 하기 위해, 5일, 10일, 50일 동안 종가의 이동평균을 구하였다.
+```
+    # 이동평균 계산
+    stock_datas['moving_avgs_5'] = stock_datas['Close'].rolling(window=5).mean()
+    stock_datas['moving_avgs_10'] = stock_datas['Close'].rolling(window=10).mean()
+    stock_datas['moving_avgs_50'] = stock_datas['Close'].rolling(window=50).mean()
+```
+데이터의 전처리를 위해, NaN을 없애주고 ```stock_datas = stock_datas.dropna()```
+feature와 target을 정의해준다. 
+```
+feat_set = stock_datas[['Close', 'moving_avgs_5', 'moving_avgs_10', 'moving_avgs_50']]
+close_price = stock_datas['Close'].shift(-1).dropna()
+```
+```train_test_split```을 사용하여 train data, test data를 나눠준다.
+```
+    # train_test_split 사용
+    # 70% : train set
+    # 30% : test set
+    X_train, X_test, y_train, y_test = train_test_split(
+        feat_set, close_price, test_size=0.3, random_state=10, shuffle=False
+    )
+```
+위는 전처리를 거친 data들중 70%는 train set, 30%는 test set으로 쓰겠다는 것이다.
+Lasso 회귀를 사용하여 모델을 훈련한다.
+```
+    # 모델 초기화 및 훈련
+    prediction_model = Lasso().fit(X_train, y_train)
+    models[name] = prediction_model  # Store the trained model
+    # 예측
+    predictions = prediction_model.predict(X_test)
+```
+각각의 모델은 mae, mse, r2, rmse를 사용하여 평가하였다.
+결국 내일의 주가를 예측해보기 위해서 이러한 모델이 있는 것이므로, 다음의 코드는 바로 다음날의 주가를 예측하여 전날 대비 주가가 상승했는지, 감소했는지, 변동이 없는지 예측한다.
+```
+    # 가장 최신의 특성을 사용하여 다음 날의 주가 예측
+    latest_feat = stock_datas[['Close', 'moving_avgs_5', 'moving_avgs_10', 'moving_avgs_50']].iloc[-1].values.reshape(1, -1)
+    predicted_next_close = prediction_model.predict(latest_feat)
 
+    # 오늘의 실제 종가
+    latest_close = stock_datas['Close'].iloc[-1]
+    
+    # 예측값과 실제값의 차이 계산
+    difference = predicted_next_close[0] - latest_close
+
+    # difference가 Series인지 확인하고 스칼라로 변환
+    if isinstance(difference, (pd.Series, np.ndarray)):
+        difference = difference.item()
+
+    # 상승/감소/변동 없음 여부 판단
+    if difference > 0:
+        change_status = "상승"
+    elif difference < 0:
+        change_status = "감소"
+    else:
+        change_status = "변동 없음"
+
+    # 결과 출력
+    print(f'Predicted Next Closing Price for {name}: {predicted_next_close[0]:.2f}')
+    print(f'Difference (Prediction - Today\'s Close): {difference:.2f} ({change_status})')
+```
+latest feature을 가져와서, 한 번의 prediction을 거친다. 오늘의 주가 지수로 상승, 감소, 변동 없음을 출력한다.
+다음과 같이 plot하였다.
+```
+    # Plot: 실제 vs 예측
+    plt.figure(figsize=(14, 7))
+    plt.plot(y_test.index, y_test.values, label='Actual Price')
+    plt.plot(y_test.index, predictions, label='Predicted Price')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.title(f'{name} - Actual vs. Predicted Stock Prices')
+    plt.legend()
+    plt.show()
+
+    # Plot: 이동평균 + 종가
+    plt.figure(figsize=(14, 7))
+    plt.plot(stock_datas.index, stock_datas['Close'], label='Close Price')
+    plt.plot(stock_datas.index, stock_datas['moving_avgs_5'], label='5-Period MA')
+    plt.plot(stock_datas.index, stock_datas['moving_avgs_10'], label='10-Period MA')
+    plt.plot(stock_datas.index, stock_datas['moving_avgs_50'], label='50-Period MA')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.title(f'{name} - Close Price Over Time')
+    plt.legend()
+    plt.show()
+```
+2 year analysis result :
+<img width="497" alt="image" src="https://github.com/user-attachments/assets/b292c4ea-2754-404f-940e-72831d9617e3">
+![image](https://github.com/user-attachments/assets/239bbed1-6ef0-4c39-b5fb-90c1a190bd13)
+![image](https://github.com/user-attachments/assets/72ef1e47-e338-4959-b97a-9a0a32a35c58)
 
