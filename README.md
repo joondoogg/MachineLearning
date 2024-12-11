@@ -80,9 +80,9 @@ detector는 Blob 감지기이며, Blob의 최대 크기는 1500픽셀이다. 블
 ```
 cap = cv2.VideoCapture(0)
 cv2.namedWindow('image')
-cv2.createTrackbar('threshold', 'image', 0, 255, lambda x: None)
+cv2.createTrackbar('threshold', 'image', 64, 255, lambda x: None)
 ```
-컴퓨터의 내장된 카메라로 영상을 캡처하기 시작한다. 이 ```threshold```는 이미지를 이진화하는데에 쓰이는 값이며, 픽셀 값이 ```threshold```보다 크면 흰색(255), 작으면 검정색(0)으로 설정된다. 영상이 찍히는 곳 주변이 밝을 경우와 어두울 경우에 threshold를 바꿔가며 track이 잘 되는 최적점을 찾아낸다.
+컴퓨터의 내장된 카메라로 영상을 캡처하기 시작한다. 이 ```threshold```는 이미지를 이진화하는데에 쓰이는 값이며, 픽셀 값이 ```threshold```보다 크면 흰색(255), 작으면 검정색(0)으로 설정된다. 영상이 찍히는 곳 주변이 밝을 경우와 어두울 경우에 threshold를 바꿔가며 track이 잘 되는 최적점을 찾아낸다. 기본값은 64로 설정하였다.
 ```
     # 얼굴 검출
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
