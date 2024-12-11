@@ -1,3 +1,8 @@
+'''
+기계학습과 응용 프로젝트
+2020131013 정준혁
+목적 : 특정 인물의 얼굴을 인식하는 모델
+'''
 !pip install bing-image-downloader
 from bing_image_downloader import downloader
 import tensorflow as tf
