@@ -159,7 +159,7 @@ downloader.download('아이유', limit=100, output_dir='dataset', force_replace=
 # 원본 이미지가 저장된 디렉토리
 original_dataset_dir = 'dataset/IU'
 ```
-bing image downloader를 통해 bing에서 아이유 사진 100장을 다운받고, 저장될 디렉토리를 명시적으로 만든다.
+bing image downloader를 통해 bing에서 아이유 사진 100장을 다운받고, 저장될 디렉토리를 명시적으로 만든다. (이때 일일이 확인하여 삭제할 사진들은 전부 삭제하였다)
 
 ```
 from sklearn.model_selection import train_test_split
