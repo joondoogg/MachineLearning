@@ -56,16 +56,18 @@ for(ex, ey, ew, eh) in eyes:
 
 <img width="579" alt="image" src="https://github.com/user-attachments/assets/1825688d-057d-4b36-b6c7-6ee8f1ba2d38">
 
-이를 해결하는 방법으로는 더 많은 training set으로 해결하는 방법이 있지만, 시간을 줄일 수 있는 좋은 방법이 있다. 바로 인식된 얼굴의 height의 절반 이하에 눈이 (보통 사람이라면) 있지 않음을 이용하여(즉 height로 제한을 둬, 입 쪽을 눈으로 인식할 수 없게끔 만듦), computation을 매우 아끼면서 해결할 수 있다. 이는 시선 track 모델에서 구현하였다.
+이를 해결하는 방법으로는 더 많은 training set으로 해결하는 방법이 있지만, 시간을 줄일 수 있는 좋은 방법이 있다.
+우선 눈은 face로 인식한 직사각형 안에 있어야하며, 인식된 얼굴의 height의 절반 이하에 눈이 (보통 사람이라면) 있지 않음을 이용하여 computation을 아끼고 문제를 해결할 수 있다. 이는 시선 track 모델에서 구현하였다.
 ```
 cv2.imshow('face, eyes and mouth detected image', image)
 cv2.waitKey()
 ```
 박스로 감싸진 결과를 확인할 수 있다. waitKey()는 어떤 키를 누르기 전까지 결과가 나온다는 것이다.
 training set은 pinterest를 통해 직접 다운 받은 이미지들의 set이다.
-결과 첨부하기 *!(&@(&%(!@%&!@%&(
+```https://kr.pinterest.com/search/pins/?q=face%20eye&rs=typed```
+<img width="531" alt="image" src="https://github.com/user-attachments/assets/2d894cbc-5c56-45c0-a675-4471bb9587f3">
 
-비록 간단해 보일 수 있지만, OpenCV를 이해하는데 매우 큰 도움이 된 구현이었다. 이를 기반으로 최종적인 목적인 시선 track 모델을 구현하였다.
+이는 OpenCV 라이브러리를 이해하는데 큰 도움이 된 구현이었다. 이를 기반으로 다음의 시선 track 모델을 구현하였다.
 
 _시선 tracking 모델_
 ```
