@@ -39,15 +39,22 @@ for(x, y, w, h) in faces:
 <img width="958" alt="스크린샷 2024-12-11 오후 8 13 17" src="https://github.com/user-attachments/assets/6c19721e-2323-4c46-b70b-4cf68aeb59af">
 
 ```
-#identify the eyes and mouth using haar-based classifiers
+# 눈
 eyes = eye_cascade.detectMultiScale(gray_image, 1.3, 5)
 
 #iteration through the eyes and mouth array and draw a rectangl
 for(ex, ey, ew, eh) in eyes:
     cv2.rectangle(image,(ex, ey), (ex+ew, ey+eh), (0, 255, 0), 2)
 ```
-마찬가지로, 눈을 인식하여 눈 주변에 박스로 감싼다. 그러나 학습된 모델이더라도 입 쪽을 눈으로 착각하는 경우가 있다. 다음의 사진이 그렇다.
-사진 넣기
+마찬가지로, 눈을 인식하여 눈 주변에 박스로 감싼다. 
+
+<img width="812" alt="image" src="https://github.com/user-attachments/assets/0ff00f2d-2814-47c9-a5ba-84dc9d9ff1e1">
+
+그러나 위 모델은 눈이 아닌 곳을 눈으로 착각하는 경우가 있다.
+
+<img width="494" alt="image" src="https://github.com/user-attachments/assets/4f67cf99-57c7-4845-8c15-f318b1bfe17c">
+
+<img width="579" alt="image" src="https://github.com/user-attachments/assets/1825688d-057d-4b36-b6c7-6ee8f1ba2d38">
 
 이를 해결하는 방법으로는 더 많은 training set으로 해결하는 방법이 있지만, 시간을 줄일 수 있는 좋은 방법이 있다. 바로 인식된 얼굴의 height의 절반 이하에 눈이 (보통 사람이라면) 있지 않음을 이용하여(즉 height로 제한을 둬, 입 쪽을 눈으로 인식할 수 없게끔 만듦), computation을 매우 아끼면서 해결할 수 있다. 이는 시선 track 모델에서 구현하였다.
 ```
