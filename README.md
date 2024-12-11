@@ -145,7 +145,241 @@ cv2.createTrackbar('threshold', 'image', 64, 255, lambda x: None)
 
 https://github.com/user-attachments/assets/5e866e56-041d-402a-ad5d-8e93a53385e5
 
-# 두 번째 프로젝트 : 주가 지수 예측 모델
+# 두 번째 프로젝트 : 얼굴 인식 모델
+Motivation : 첫 번째 프로그램과 같은 맥락에서, 결국 얼굴 인식으로 잠금해제를 하는 것에서 영감을 받아, 마지막으로는 얼굴을 인식하는 모델을 만들어보았습니다. 저를 인식하는 모델을 만들어보고 싶었지만, 아무래도 train data, test data를 충분히 확보하지 못 할 것 같아서, 연예인 아이유를 인식하는 모델을 만들어보았습니다. 연예인에 대해서 잘 몰랐지만, 연예인을 검색할 때 아이유 사진이 많이 나온다는 것을 확인하였고, 데이터를 많이 수집할 수 있을 것 같아서 아이유 얼굴 인식 모델을 만들어 보았습니다. 첫 번째 프로그램과 달리, 제가 직접 데이터들을 선별하였고(허수 데이터들 분별) CNN 기법으로 모델 훈련을 마쳤습니다. 이미지를 다운 받을 수 있는 bing-image-downloader를 사용하였습니다.
+
+_(아이유)얼굴 인식 모델_
+
+```
+from bing_image_downloader import downloader
+
+# '아이유' 이미지를 다운로드
+downloader.download('아이유', limit=100, output_dir='dataset', force_replace=False, verbose=True)
+
+# 원본 이미지가 저장된 디렉토리
+original_dataset_dir = 'dataset/IU'
+```
+bing image downloader를 통해 bing에서 아이유 사진 100장을 다운받고, 저장될 디렉토리를 명시적으로 만든다.
+
+```
+from sklearn.model_selection import train_test_split
+
+# 원본 이미지 디렉토리
+all_images_dir = 'dataset/IU'
+
+# 분할 후 이미지가 저장될 디렉토리
+train_dir = 'dataset/train/iu'
+test_dir = 'dataset/test/iu'
+
+# 디렉토리 생성
+os.makedirs(train_dir, exist_ok=True)
+os.makedirs(test_dir, exist_ok=True)
+
+# 모든 이미지 파일 리스트 가져오기
+images = [f for f in os.listdir(all_images_dir) if os.path.isfile(os.path.join(all_images_dir, f))]
+
+# 학습용과 테스트용으로 분할 (80% 학습, 20% 테스트)
+train_images, test_images = train_test_split(images, test_size=0.2, random_state=42)
+
+# 학습용 이미지 복사
+for img in train_images:
+    src = os.path.join(all_images_dir, img)
+    dst = os.path.join(train_dir, img)
+    shutil.copy(src, dst)
+
+# 테스트용 이미지 복사
+for img in test_images:
+    src = os.path.join(all_images_dir, img)
+    dst = os.path.join(test_dir, img)
+    shutil.copy(src, dst)
+
+print(f"학습용 이미지 수: {len(train_images)}")
+print(f"테스트용 이미지 수: {len(test_images)}")
+```
+데이터 중 80%는 학습용 데이터, 20%는 test용 데이터로 구분하였으며, 각각의 디렉토리를 만들어서 이미지를 복사하는 과정이다.
+
+결과(도중 아이유가 아닌 사진들은 수작업으로 삭제하여 총 88개의 데이터를 사용하였다) : 
+
+<img width="204" alt="image" src="https://github.com/user-attachments/assets/548cdfd7-9f0b-41c5-bcdb-0b9847481df9">
+
+```
+# 'not_iu' 이미지 다운로드 예시
+downloader.download('인물', limit=100, output_dir='dataset', 
+                   adult_filter_off=True, force_replace=False, 
+                   timeout=60, verbose=True)
+
+# 'not_iu' 이미지 통합
+original_not_iu_dir = 'dataset/인물'
+
+# 'not_iu' 데이터 분할
+train_not_iu_dir = 'dataset/train/not_iu'
+test_not_iu_dir = 'dataset/test/not_iu'
+
+os.makedirs(train_not_iu_dir, exist_ok=True)
+os.makedirs(test_not_iu_dir, exist_ok=True)
+
+not_iu_images = [f for f in os.listdir(original_not_iu_dir) if os.path.isfile(os.path.join(original_not_iu_dir, f))]
+
+train_not_iu, test_not_iu = train_test_split(not_iu_images, test_size=0.2, random_state=42)
+
+for img in train_not_iu:
+    src = os.path.join(original_not_iu_dir, img)
+    dst = os.path.join(train_not_iu_dir, img)
+    shutil.copy(src, dst)
+
+for img in test_not_iu:
+    src = os.path.join(original_not_iu_dir, img)
+    dst = os.path.join(test_not_iu_dir, img)
+    shutil.copy(src, dst)
+
+print(f"'not_iu' 학습용 이미지 수: {len(train_not_iu)}")
+print(f"'not_iu' 테스트용 이미지 수: {len(test_not_iu)}")
+```
+-> 아이유가 아닌 사진을 다운 받고, 마찬가지로 디렉토리를 정리해준다.
+```
+# 데이터셋 디렉토리 경로 설정
+base_dir = 'dataset/'
+train_dir = os.path.join(base_dir, 'train')
+validation_dir = os.path.join(base_dir, 'test')  # 여기서는 test 데이터를 validation으로 사용
+
+# 이미지 크기 및 배치 사이즈 설정
+IMG_HEIGHT, IMG_WIDTH = 224, 224
+BATCH_SIZE = 32
+
+# 데이터 증강 및 전처리
+train_datagen = ImageDataGenerator(
+    rescale=1./255,         # 픽셀 값을 0-1 범위로 스케일링
+    rotation_range=40,      # 회전 범위
+    width_shift_range=0.2,  # 수평 이동 범위
+    height_shift_range=0.2, # 수직 이동 범위
+    shear_range=0.2,        # 전단 변환
+    zoom_range=0.2,         # 확대/축소 범위
+    horizontal_flip=True,   # 수평 뒤집기
+    fill_mode='nearest'     # 빈 공간 채우기 방법
+)
+
+validation_datagen = ImageDataGenerator(rescale=1./255)
+test_datagen = ImageDataGenerator(rescale=1./255)
+```
+-> 데이터 셋을 정리 한 후, 데이터의 전처리 과정이다. 이미지 크기, 배치 사이즈를 정하여 ```ImageDataGenerator```로 전처리를 하였다.(훈련 데이터에는 데이터 증강, 검증 데이터에는 데이터 증강을 하지 않고 스케일링만 한다). 전처리의 세세한 설명(원본 코드에는 없는)을 챗지피티를 통해 주석으로 작성하였다.
+```validation_datagen```, ```test_datagen```으로 나눈 것을 확인할 수 있다.
+
+```
+# 데이터 생성기
+train_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='binary'  # 이진 분류
+)
+
+validation_generator = validation_datagen.flow_from_directory(
+    validation_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='binary'
+)
+```
+-> ```flow_from_directory```를 사용하여 훈련, 검증 제너레이터를 생성한다. 
+<img width="431" alt="image" src="https://github.com/user-attachments/assets/65174729-6d43-4da2-8aea-2de8c9ee7d43">
+
+```
+# 전이 학습 모델 구축
+base_model = MobileNetV2(input_shape=(IMG_HEIGHT, IMG_WIDTH, 3),
+                         include_top=False,
+                         weights='imagenet')
+base_model.trainable = False
+
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(1, activation='sigmoid')  # 이진 분류
+])
+
+model.compile(optimizer=Adam(learning_rate=1e-4),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+```
+-> Transfer Learning을 활용하여, MobileNetV2를 기반으로 한 이진 분류모델을 구축한다(아이유인지 아닌지 확인).
+* 베이스 모델이 MobileNetV2인 이유는 빠른 학습과 추론이 가능하여 colab의 GPU 메모리 환경에 적합하여 이를 선택하였다.
+* ImageNet은 다양한 이미지 인식 작업에 효과적이어서 사용하였다.
+* ```trainable = False``` 로 두어, 사전 학습된 베이스 모델의 가중치를 고정시켜 학습 과정에서 업데이트되지 않게 하였다.(overfitting을 방지)
+* 여기서 _일반적으로_ 더 높은 성능을 원한다면, 일부 층을 학습 가능하게 만들고 Fine tuning을 거치면 된다. (False를 True로 한 뒤, 특정 층까지의 layer.trainable=True로 하여, 재컴파일하고 epoch를 재설정하여 재학습하면 된다(이는 해보았지만, 큰 변화가 없고 Colab의 환경에서 GPU사용이 제한적이어서 최종 코드에는 없습니다))
+* 모델의 컴파일에서, loss를 ```binary_corssentropy``` 로 설정하였는데, 이는 이진 분류 모델에 적합한 loss function이라서 선택하였다.
+
+```
+# 모델 학습
+EPOCHS = 10
+history = model.fit(
+    train_generator,
+    steps_per_epoch=train_generator.samples // BATCH_SIZE,
+    epochs=EPOCHS,
+    validation_data=validation_generator,
+    validation_steps=validation_generator.samples // BATCH_SIZE
+)
+```
+-> Colab의 환경에서 Epochs를 10을 설정하여 모델을 학습하면 충분히 reasonable한 시간 하에 모델의 훈련이 끝났다. (Epoch 100은 8분 걸린다)
+<img width="229" alt="image" src="https://github.com/user-attachments/assets/b793704f-cdde-435e-97bc-b01af6bdc4b8">
+
+Epoch를 높여가면 반복 학습을 통해 데이터의 패턴을 점진적으로 정확하게 측정하는 것으로 알고 있다. 이를 비교해보기 위해, Epochs 10 과 100을 사용해보았다. 물론 과적합 문제와, 학습 시간이 길어진다. 이는 Early Stopping을 하면 되지만, 한 것과 안 한 것의 차이가 없어, 반영을 안 한 코드 상태로 유지했다.
+
+```
+# 테스트 데이터 평가
+test_loss, test_acc = model.evaluate(validation_generator, steps=validation_generator.samples // BATCH_SIZE)
+print(f'\n테스트 정확도: {test_acc:.4f}')
+
+# 예측 수행
+predictions = model.predict(validation_generator, steps=validation_generator.samples // BATCH_SIZE)
+predicted_classes = (predictions > 0.5).astype(int).reshape(-1)
+true_classes = validation_generator.classes[:len(predicted_classes)]
+class_labels = list(validation_generator.class_indices.keys())
+```
+-> Epochs = 10
+<img width="818" alt="image" src="https://github.com/user-attachments/assets/6684c975-21be-44e9-9a9e-45a38ffabbd9">
+-> Epoch = 100
+<img width="848" alt="image" src="https://github.com/user-attachments/assets/fbf4263a-f340-4591-aa33-24b03d97832f">
+
+확실히 Epoch를 높였더니, 모델의 정확도가 올라갔다!
+
+```
+# 모델을 'iu_model.keras' 파일로 저장
+model.save('iu_model.keras')
+```
+모델을 저장한 후, 이미지를 업로드 하여 모델을 사용해보았다.
+```
+# 업로드된 파일 중 첫 번째 파일을 선택
+uploaded_filename = list(uploaded.keys())[0]
+
+# 이미지 로드 및 전처리
+img = image.load_img(uploaded_filename, target_size=(224, 224))  # MobileNetV2의 입력 크기
+img_array = image.img_to_array(img)
+img_array = np.expand_dims(img_array, axis=0)  # 배치 차원 추가
+img_array /= 255.0  # 스케일링 (학습 시 적용한 전처리와 동일하게)
+
+# 이미지 시각화 (꼭 필요한 것은 아님)
+plt.imshow(img)
+plt.axis('off')
+plt.title('uploaded image')
+plt.show()
+```
+-> 업로드 할 이미지의 전처리 과정이다
+업로드 한 이미지의 전처리 과정 이후 :
+<img width="581" alt="스크린샷 2024-12-11 오후 10 36 15" src="https://github.com/user-attachments/assets/07cffc19-dc27-4e8f-921c-8d4b973b38cf">
+
+Epochs = 10 모델의 결과 :
+<img width="414" alt="스크린샷 2024-12-11 오후 10 36 02" src="https://github.com/user-attachments/assets/ed87ef41-44cb-4ce0-a3ce-cbdd0432d8e7">
+
+Epochs = 100 모델의 결과 :
+<img width="384" alt="image" src="https://github.com/user-attachments/assets/d86e939b-b1f4-4a4a-ab36-1850ec9aa1a8">
+
+정확도가 늘어난 것을 확인할 수 있다.
+
+두 번째 프로젝트를 마무리하며,
+첫 번째 두 번째 프로젝트를 통해 이미지 프로세싱과 CNN의 기법을 통해 전처리 과정, 모델 학습 등을 경험해보며 이론적으로만 알았던 개념들이 눈으로 직접 비교하고 실험해보니, 정리가 많이 되었습니다. 다음에는 GNN기법을 공부해봐서, 스스로 프로젝트를 만들어 볼 것입니다.
+
+# 세 번째 프로젝트 : 주가 지수 예측 모델
 Motivation : 퀀트 투자는 고급 수학 능력과 컴퓨터 알고리즘을 활용하여 주가 지수를 예측하고, 최선의 hedging전략을 펼치는 투자 전략입니다. 이는 투자 결정에서 인간의 감정, 직관 등을 배제하고 데이터를 기반으로 분석한다는 점에서 기존의 분석을 대체하였습니다. 머신러닝 알고리즘은 대규모 금융 데이터에서 패턴을 탐지하는데 강력한 도구가 될 수 있습니다. 저는 파이썬을 활용하여 어떻게 금융 데이터를 분석하는 모델을 구현할까? 라는 궁금증에서 출발해서 이 모델을 구현하게 되었습니다.
 
 _주가예측 모델_
